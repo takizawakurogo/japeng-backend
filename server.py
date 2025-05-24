@@ -18,7 +18,7 @@ def translate():
     try:
         # Ask ChatGPT for JSON when doing JP→EN, otherwise plain text reply
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="o4-mini-2025-04-16",
             messages=[
                 {
                     "role": "system",

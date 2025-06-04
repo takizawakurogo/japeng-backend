@@ -1,7 +1,8 @@
+# server.py (minimal proxy version)
+
 from flask import Flask, request, jsonify
 import openai
 import os
-import json
 
 app = Flask(__name__)
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -16,39 +17,17 @@ def translate():
     user_input = payload.get("text", "")
 
     try:
-        # Ask ChatGPT for JSON when doing JP→EN, otherwise plain text reply
+        # Directly forward user_input (the whole prompt) to ChatGPT:
         response = openai.chat.completions.create(
             model="o4-mini-2025-04-16",
             messages=[
-                {
-                    "role": "system",
-                    "content": "You are a Japanese-English translator and grammar checker."
-                },
-                {
-                    "role": "user",
-                    "content": user_input
-                }
+                {"role": "system", "content": "You are a Japanese-English translator and grammar checker."},
+                {"role": "user",   "content": user_input}
             ]
         )
         content = response.choices[0].message.content.strip()
-
-        # Try to parse JSON
-        try:
-            parsed = json.loads(content)
-        except json.JSONDecodeError:
-            # Not JSON — return as simple reply
-            return jsonify({ "reply": content })
-
-        # If it has honorific/formal/casual, return as-is
-        if all(k in parsed for k in ("honorific", "formal", "casual")):
-            return jsonify({
-                "honorific": parsed["honorific"],
-                "formal":    parsed["formal"],
-                "casual":    parsed["casual"]
-            })
-        else:
-            # Otherwise, just echo back the parsed object under "reply"
-            return jsonify({ "reply": content })
+        # Simply return the raw content under “reply” (always JSON)
+        return jsonify({ "reply": content })
 
     except Exception as e:
         return jsonify({ "error": str(e) }), 500

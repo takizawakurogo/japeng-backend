@@ -1,5 +1,3 @@
-# server.py (minimal proxy version)
-
 from flask import Flask, request, jsonify
 import openai
 import os
@@ -17,16 +15,14 @@ def translate():
     user_input = payload.get("text", "")
 
     try:
-        # Directly forward user_input (the whole prompt) to ChatGPT:
         response = openai.chat.completions.create(
-            model="o4-mini-2025-04-16",
+            model="gpt-4.1-nano-2025-04-14",
             messages=[
                 {"role": "system", "content": "You are a Japanese-English translator and grammar checker."},
                 {"role": "user",   "content": user_input}
             ]
         )
         content = response.choices[0].message.content.strip()
-        # Simply return the raw content under “reply” (always JSON)
         return jsonify({ "reply": content })
 
     except Exception as e:

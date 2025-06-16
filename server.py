@@ -16,7 +16,7 @@ def translate():
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-4.1-nano-2025-04-14",
+            model="gpt-4.1-2025-04-14",
             messages=[
                 {"role": "system", "content": "You are a Japanese-English translator and grammar checker."},
                 {"role": "user",   "content": user_input}
